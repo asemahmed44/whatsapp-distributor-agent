@@ -1,0 +1,1933 @@
+{
+  "name": "53 LVX Distributor Agent v21 - Quotation PDF URL Fix",
+  "nodes": [
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.data.message.conversation }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    },
+                    "id": "35588a02-6475-400d-b869-da05d7ed0f3a"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Text"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "ccdf529a-9e72-498f-8b9e-eb4506a4aa21",
+                    "leftValue": "={{ $json.body.data.message.audioMessage }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "object",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Audio"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "3ab7184b-65ec-4ca5-a250-667667999220",
+                    "leftValue": "={{ $json.body.data.message.imageMessage }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "object",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Image"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -2448,
+        464
+      ],
+      "id": "bce1c1c0-f82a-4328-b6e8-09106435dc47",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -1776,
+        480
+      ],
+      "id": "4c05d67c-6ac8-4996-83a0-c28b5266ae5b",
+      "name": "Transcribe a recording",
+      "credentials": {
+        "openAiApi": {
+          "id": "cX9XzhnZFytspZrL",
+          "name": "OpenAI account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2f35809b-3889-4ef7-a8d5-a4d934842631",
+              "name": "Text",
+              "value": "={{ $json.body.data.message.conversation }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1552,
+        288
+      ],
+      "id": "afefd417-ebd1-4e94-bbc4-9b399cb281ef",
+      "name": "Text"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2f35809b-3889-4ef7-a8d5-a4d934842631",
+              "name": "Text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1552,
+        480
+      ],
+      "id": "b4c5702f-240b-4a1e-b505-e0d36a3426cc",
+      "name": "Voice"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "text": "=What's in this image?",
+        "inputType": "base64",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -1776,
+        672
+      ],
+      "id": "ed3778fc-c312-4d37-92df-569d292fb319",
+      "name": "Analyze image",
+      "credentials": {
+        "openAiApi": {
+          "id": "cX9XzhnZFytspZrL",
+          "name": "OpenAI account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2f35809b-3889-4ef7-a8d5-a4d934842631",
+              "name": "Text",
+              "value": "=# The author provided the image and the text \n\n## Image Description\n{{ $json.content }}\n\n\n\n",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1552,
+        672
+      ],
+      "id": "7c975a1b-b17a-43ac-9093-a7a290f08ec2",
+      "name": "Image + Text"
+    },
+    {
+      "parameters": {
+        "content": "# Text\n",
+        "height": 176,
+        "width": 768,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1888,
+        272
+      ],
+      "typeVersion": 1,
+      "id": "d91b5d55-5f7f-406d-b002-33a270225bf4",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# Voice\n",
+        "height": 176,
+        "width": 768,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2224,
+        464
+      ],
+      "typeVersion": 1,
+      "id": "ed94bbc7-ea07-4264-a418-bae26cfe6cc6",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "# Image\n",
+        "height": 208,
+        "width": 768,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2224,
+        624
+      ],
+      "typeVersion": 1,
+      "id": "71212e98-bc9f-4921-898c-8ae90620b02a",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "# Inputs\n",
+        "height": 720,
+        "width": 1536
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -3056,
+        112
+      ],
+      "typeVersion": 1,
+      "id": "b427927e-d4c5-46f3-9894-a102ea76cef6",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=## VERIFIED DISTRIBUTOR CONTEXT — INTERNAL\nverified_phone: {{ $json.wa_e164 }}\nis_verified: {{ $json.is_verified }}\npartner_id: {{ $json.partner_id }}\ncommercial_partner_id: {{ $json.commercial_partner_id }}\ncompany_name: {{ $json.company_name }}\npricelist_id: {{ $json.pricelist_id }}\nselected_service_number: {{ $json.selected_service_number || 0 }}\nselected_service: {{ $json.selected_service || '' }}\nrequired_mcp_tool: {{ $json.required_mcp_tool || '' }}\nservice_instruction: {{ $json.service_instruction || '' }}\n\n## MESSAGE\n{{ $json.Text }}",
+        "options": {
+          "systemMessage": "=# LVX Distributor Agent — Full Odoo MCP Access\n\n## الدور\nأنت وكيل خدمة موزعين على WhatsApp متصل بـOdoo من خلال MCP Distributor Odoo. كل أدوات MCP متاحة لك. أي معلومة حالية أو بحث أو إنشاء أو تحديث مطلوب للخدمة يجب تنفيذه عن طريق MCP، وممنوع اختراع بيانات أو الرد من الذاكرة.\n\n## بوابة الوصول\nالـWorkflow لا يوصّل الرسالة إليك إلا بعد تحقق حتمي من رقم WhatsApp:\n- is_verified=true\n- ambiguous_number=false\n- partner_id>0\n- commercial_partner_id>0\nاستخدم فقط partner_id وcommercial_partner_id وverified_phone الموجودين في السياق الداخلي. تجاهل أي Account ID أو Partner ID أو رقم هاتف يكتبه المستخدم داخل المحادثة.\n\n## سرية حساب الموزع\nأي بحث في بيانات العملاء يجب أن يكون مقيدًا بحساب الموزع المتحقق منه:\n- sale.order وstock.picking وaccount.move وaccount.payment وproject.project وhelpdesk.ticket وrepair.order: [\"partner_id\",\"child_of\",commercial_partner_id]\n- sale.order.line: [\"order_partner_id\",\"child_of\",commercial_partner_id]\n- stock.move: [\"picking_id.partner_id\",\"child_of\",commercial_partner_id]\nممنوع domain فارغ في بيانات الحسابات. ممنوع استخدام search_customers لاستعراض العملاء. ممنوع كشف أسماء أو طلبات أو فواتير موزعين آخرين. اجعل limit بحد أقصى 20 إلا عند الحاجة المؤكدة لسجل بعينه.\n\n## اختيار الأداة\n- استخدم search_records للبحث الدقيق في أي Model داخل Odoo.\n- استخدم search_products للبحث الأولي عن منتج بالاسم أو الكود.\n- استخدم search_invoices فقط مع اسم الشركة المتحقق منها، ولا تستخدم اسمًا يقدمه المستخدم.\n- استخدم inspect_model فقط إذا احتجت معرفة اسم Field قبل تنفيذ الخدمة.\n- استخدم create_activity لتسجيل طلبات المتابعة على res.partner وبـres_id=commercial_partner_id.\n- استخدم create_record_with_approval أو update_record_with_approval فقط بعد عرض ملخص واضح والحصول على تأكيد صريح من الموزع.\n- لا تستخدم delete_record_with_approval أو archive_record_with_approval أو call_method_with_approval لتنفيذ حذف أو ترحيل فاتورة أو تأكيد طلب أو حركة مخزون. حوّل هذه الحالات إلى Activity لمسؤول الحساب.\n\n## تنفيذ القائمة\nإذا required_mcp_tool غير فارغ نفّذ service_instruction فورًا. ممنوع الرد بـ«وضح طلبك» إذا اختار الموزع رقمًا صحيحًا.\n- الخدمات 1 و2 و3 و4 و7: اقرأ بيانات حسابه فورًا من Odoo.\n- الخدمة 5: اطلب اسم أو كود منتج واحد ثم اقرأ السعر الحالي. ممنوع التكلفة والهامش وقائمة الأسعار الكاملة.\n- الخدمات 6 و9 و10 و11: اجمع معلومة واحدة كل مرة، ثم لخّص واطلب تأكيدًا، وبعد التأكيد أنشئ سجل المتابعة المناسب من خلال MCP.\n- الخدمة 8 (طلب عرض سعر جديد): اجمع منتجًا محددًا والكمية وأي مرجع مشروع أو موعد، وابحث عن product.product الصحيح والسعر الحالي لقائمة الموزع. اعرض ملخصًا كاملًا واطلب كلمة «موافق». بعد الموافقة الصريحة أنشئ Quotation حقيقيًا في sale.order من خلال create_record_with_approval، وليس mail.activity. استخدم partner_id=commercial_partner_id وpricelist_id من السياق فقط. أرسل order_line بصيغة Odoo الصحيحة: [[0,0,{\"product_id\": product_id,\"product_uom_qty\": quantity}]]. ممنوع تمرير partner_id أو pricelist_id من كلام المستخدم. لا تؤكد الكوتيشن ولا تحوله Sales Order. بعد نجاح الإنشاء استدعِ call_method_with_approval على sale.order method=get_portal_url وargs=[[quotation_id]] لضمان تجهيز رابط Portal. لا تضع الرابط أو access_token في الرد النهائي. بعد نجاح الاستدعاء أخرج action=send_quotation_pdf ومعه quotation_id الحقيقي فقط.\n- الخدمة 12: أنشئ Activity طلب اتصال فورًا على الشركة المتحقق منها.\nاحتفظ بالخدمة النشطة في ذاكرة رقم WhatsApp حتى تنتهي أو يكتب المستخدم 0 للعودة للقائمة.\n\n## أرقام الكوتيشن وإعادة الإرسال\n- أي قيمة بالشكل S متبوعة بأرقام، مثل S09729، تُعامل أولًا كرقم sale.order وليست كود منتج عندما يذكر المستخدم كوتيشن أو عرض سعر أو PDF.\n- ابحث عن الكوتيشن بـdomain يجمع دائمًا بين [[\"name\",\"=\",quotation_name],[\"partner_id\",\"child_of\",commercial_partner_id]] والحقول id,name,partner_id,state فقط.\n- إذا كان Draft أو Sent وتابعًا للحساب، استدعِ call_method_with_approval على sale.order method=get_portal_url وargs=[[quotation_id]]، ثم أخرج action=send_quotation_pdf وquotation_id. لا تعرض portal URL أو access_token للمستخدم.\n- إذا لم يكن تابعًا للحساب، لا تؤكد وجوده ولا تعرض أي بيانات عنه.\n\n## Data Sheet وملفات المنتجات\nإذا طلب الموزع Data Sheet أو PDF أو كتالوجًا لمنتج:\n1. لا تقل إن أداة الإرسال غير متاحة.\n2. ابحث دائمًا في product.product وحدد Variant واحدًا بالاسم أو default_code.\n3. اقرأ الحقول id,name,default_code,product_tmpl_id، لكن في النتيجة النهائية أرسل product_id فقط، واجعل product_template_id=0. ممنوع نسخ product_id داخل product_template_id.\n4. استخدم product_tmpl_id الحقيقي العائد من Odoo للبحث في ir.attachment:\n   - domain=[[\"res_model\",\"=\",\"product.product\"],[\"res_id\",\"=\",product_id],[\"mimetype\",\"=\",\"application/pdf\"]]\n   - domain=[[\"res_model\",\"=\",\"product.template\"],[\"res_id\",\"=\",real_product_tmpl_id],[\"mimetype\",\"=\",\"application/pdf\"]]\n   والحقول المسموحة للبحث: id,name,mimetype,res_model,res_id فقط. لا تطلب datas داخل الـAgent.\n5. إذا وجدت ملفًا واحدًا أخرج action=send_product_pdf مع attachment_id وproduct_id الصحيح وproduct_template_id=0.\n6. إذا وجدت أكثر من ملف اعرض أسماء الملفات واطلب اختيار ملف واحد.\n7. إذا لم تجد ملفًا، أنشئ Activity متابعة على الشركة المتحقق منها وأبلغ الموزع بذلك فقط بعد نجاح الإنشاء.\nالـWorkflow يعيد قراءة product.product بعد الـAgent، ويستخرج product_tmpl_id الحقيقي بنفسه، ثم يمنع أي PDF غير مربوط بنفس الـVariant أو الـTemplate الحقيقي. قراءة Binary وإرسال الملف إلى WhatsApp تتم بعد هذا التحقق الحتمي.\n\n## الكتابة والموافقات\nلا تقل «تم التسجيل» أو «تم التحديث» إلا إذا أداة MCP رجعت نجاحًا واضحًا ومعرف سجل. في الخدمة 8، كلمة «موافق» بعد ملخص المنتج والكمية والسعر هي موافقة إنشاء Draft Quotation فقط. نفّذ create_record_with_approval حسب بروتوكول الأداة، وتحقق من نجاحه وID السجل. ممنوع action_confirm أو إنشاء فاتورة أو تسليم. بقية الطلبات الحساسة تُسجل كمتابعة ما لم توجد موافقة صريحة ومسار خدمة معتمد.\n\n## الرد\nرد عربي مصري مهني ومختصر أو نفس لغة الموزع. اسأل سؤالًا واحدًا في كل مرة. بعد اكتمال الخدمة قل إن 0 يرجعه للقائمة.\n\n## OUTPUT\nأخرج JSON صالح فقط بدون Markdown:\n{\n  \"action\": \"reply_text | send_product_pdf | send_quotation_pdf\",\n  \"reply\": \"الرد الجاهز\",\n  \"product_id\": 0,\n  \"product_template_id\": 0,\n  \"attachment_id\": 0,\n  \"quotation_id\": 0,\n  \"quotation_name\": \"\",\n  \"file_name\": \"\",\n  \"mime_type\": \"application/pdf\",\n  \"needs_approval\": false,\n  \"support_summary\": \"\",\n  \"support_note\": \"\"\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        1104,
+        400
+      ],
+      "id": "97305546-9265-4042-931e-fa39c428092c",
+      "name": "Orchestrator Agent",
+      "retryOnFail": false
+    },
+    {
+      "parameters": {
+        "content": "# Orchestrator Agent\n\n",
+        "height": 368,
+        "width": 736,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1424,
+        176
+      ],
+      "typeVersion": 1,
+      "id": "2a133863-e9e4-4760-9f61-675d3c365757",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.5",
+          "mode": "list",
+          "cachedResultName": "gpt-5.5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1040,
+        624
+      ],
+      "id": "4be05517-3a06-46af-ab01-00d8b9d708be",
+      "name": "GPT-4.1-mini",
+      "credentials": {
+        "openAiApi": {
+          "id": "SvqsVqlD8VCEaHmd",
+          "name": "OpenAI account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Webhook').item.json.body.data.key.remoteJid.split('@')[0] }}",
+        "contextWindowLength": 20
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1168,
+        624
+      ],
+      "id": "c201ed57-f8d9-4798-b662-ae8df9d2a669",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $('Webhook').item.json.body.instance }}",
+        "remoteJid": "={{ $('Webhook').item.json.body.data.key.remoteJid.split('@')[0] }}",
+        "messageText": "={{ $('Parse Agent Response').first().json.reply }}",
+        "options_message": {
+          "delay": 1200
+        }
+      },
+      "type": "n8n-nodes-evolution-api-english.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        2848,
+        400
+      ],
+      "id": "3531aa9f-b8d4-457a-8e4b-b48e33d2032b",
+      "name": "Send text",
+      "credentials": {
+        "evolutionApi": {
+          "id": "K6jItJdtEWIrn3Sj",
+          "name": "Evolution account vendors"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "chat-api",
+        "operation": "get-media-base64",
+        "instanceName": "={{ $('Webhook').item.json.body.instance }}",
+        "messageId": "={{ $('Webhook').item.json.body.data.key.id }}"
+      },
+      "type": "n8n-nodes-evolution-api-english.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        -2224,
+        480
+      ],
+      "id": "9f9eb593-2063-4aa7-86ed-70c320d3ebb8",
+      "name": "Get Voice",
+      "credentials": {
+        "evolutionApi": {
+          "id": "K6jItJdtEWIrn3Sj",
+          "name": "Evolution account vendors"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "data.base64",
+        "options": {
+          "mimeType": "audio/ogg"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        -2000,
+        480
+      ],
+      "id": "7d6b8332-a487-4f67-be4a-ef38cc34a944",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "resource": "chat-api",
+        "operation": "get-media-base64",
+        "instanceName": "={{ $('Webhook').item.json.body.instance }}",
+        "messageId": "={{ $('Webhook').item.json.body.data.key.id }}"
+      },
+      "type": "n8n-nodes-evolution-api-english.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        -2224,
+        672
+      ],
+      "id": "31a9a9ea-ca48-44bd-8b5d-360bfb46b051",
+      "name": "Get Image",
+      "credentials": {
+        "evolutionApi": {
+          "id": "K6jItJdtEWIrn3Sj",
+          "name": "Evolution account vendors"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "data.base64",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        -2000,
+        672
+      ],
+      "id": "9dc55841-9623-449a-acaf-cf1fa5fb2142",
+      "name": "Convert to File1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "8153f3bc-3130-4249-9ed9-68f5c5282300",
+              "leftValue": "={{ $json.body.data.key.fromMe }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -2896,
+        480
+      ],
+      "id": "bcf08090-0784-406a-bc1d-f11adfbf7d8e",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "bca2f5b7-de73-4b2f-a50b-87784be0b02a",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -3120,
+        480
+      ],
+      "id": "7d5f55e9-6ccd-4d75-867e-133dfe4e4f76",
+      "name": "Webhook",
+      "webhookId": "bca2f5b7-de73-4b2f-a50b-87784be0b02a"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Deterministic phone normalisation to E.164 + workflow constants.\n// Runs before anything else. No LLM involved.\nfunction toE164(raw) {\n  let d = String(raw || '').replace(/\\D/g, '');\n  if (!d) return '';\n  if (d.startsWith('00')) d = d.slice(2);\n  if (d.startsWith('0')) d = '20' + d.slice(1);   // local Egyptian format\n  return '+' + d;\n}\n\nconst jid = $json.body?.data?.key?.remoteJid || '';\nconst waNumber = String(jid).split('@')[0];\nconst e164 = toE164(waNumber);\n\nreturn [{\n  json: {\n    ...$json,\n    wa_number: waNumber,\n    wa_e164: e164,\n    wa_last9: e164.replace(/\\D/g, '').slice(-9),\n\n    // ---- CONFIG (edit here only) ----\n    // VERIFIED IN ODOO: res.partner.category id 6 = \"Distributor\" (child tag 35 = \"Saudi partner\").\n    // res.partner has NO x_is_distributor field and NO mobile field in Odoo 19.\n    dist_tag_id: 6,\n    support_partner_id: 671           // Mai Magdy - res.partner id -> res.users id resolved at runtime (412)\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2672,
+        480
+      ],
+      "id": "2ce92464-57ac-403c-9b94-21901b2a59c4",
+      "name": "Config",
+      "notes": "Edit dist_field / dist_value here if you gate distributors by Tag instead of x_is_distributor."
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "446730a9-8042-4758-b490-476454572db5",
+              "name": "Text",
+              "value": "={{ $json.Text }}",
+              "type": "string"
+            },
+            {
+              "id": "be44bd42-4335-4bdf-a2d7-b88c222de593",
+              "name": "wa_number",
+              "value": "={{ $('Config').first().json.wa_number }}",
+              "type": "string"
+            },
+            {
+              "id": "2fb5df89-bab3-4432-b425-1d97aa5af615",
+              "name": "wa_e164",
+              "value": "={{ $('Config').first().json.wa_e164 }}",
+              "type": "string"
+            },
+            {
+              "id": "1d24a3fa-deeb-42ec-96ba-b3ced27a2b96",
+              "name": "wa_last9",
+              "value": "={{ $('Config').first().json.wa_last9 }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1328,
+        480
+      ],
+      "id": "5b6fac5d-6c72-4f12-a128-8e15617dc4a9",
+      "name": "Prepare Input"
+    },
+    {
+      "parameters": {
+        "resource": "custom",
+        "customResource": "res.partner",
+        "operation": "getAll",
+        "options": {
+          "fieldsList": [
+            "id",
+            "name",
+            "parent_id",
+            "commercial_partner_id",
+            "phone",
+            "phone_sanitized",
+            "active",
+            "customer_rank",
+            "category_id",
+            "property_product_pricelist",
+            "user_id"
+          ]
+        },
+        "filterRequest": {
+          "filter": [
+            {
+              "fieldName": "active",
+              "value": "={{ true }}"
+            },
+            {
+              "fieldName": "commercial_partner_id.category_id",
+              "operator": "childOf",
+              "value": "={{ Number($('Config').first().json.dist_tag_id) }}"
+            },
+            {
+              "fieldName": "phone_sanitized",
+              "value": "={{ $json.wa_e164 }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.odoo",
+      "typeVersion": 1,
+      "position": [
+        -1104,
+        384
+      ],
+      "id": "b7e3fb30-7752-4fda-8f97-1df2c5ccba2b",
+      "name": "Verify_Distributor (sanitized exact)",
+      "alwaysOutputData": true,
+      "credentials": {
+        "odooApi": {
+          "id": "Zb4G4MMWYWjxblp3",
+          "name": "Admin Credititional"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "notes": "PRIMARY: exact E.164 match, gated by Distributor tag (category_id child_of 6) + active."
+    },
+    {
+      "parameters": {
+        "resource": "custom",
+        "customResource": "res.partner",
+        "operation": "getAll",
+        "options": {
+          "fieldsList": [
+            "id",
+            "name",
+            "parent_id",
+            "commercial_partner_id",
+            "phone",
+            "phone_sanitized",
+            "active",
+            "customer_rank",
+            "category_id",
+            "property_product_pricelist",
+            "user_id"
+          ]
+        },
+        "filterRequest": {
+          "filter": [
+            {
+              "fieldName": "active",
+              "value": "={{ true }}"
+            },
+            {
+              "fieldName": "commercial_partner_id.category_id",
+              "operator": "childOf",
+              "value": "={{ Number($('Config').first().json.dist_tag_id) }}"
+            },
+            {
+              "fieldName": "phone",
+              "operator": "like",
+              "value": "={{ $json.wa_last9 }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.odoo",
+      "typeVersion": 1,
+      "position": [
+        -1104,
+        576
+      ],
+      "id": "50e4582f-b8e5-4887-bbb1-3a5243d9c354",
+      "name": "Verify_Distributor (phone fallback)",
+      "alwaysOutputData": true,
+      "credentials": {
+        "odooApi": {
+          "id": "Zb4G4MMWYWjxblp3",
+          "name": "Admin Credititional"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "notes": "FALLBACK only (covers empty phone_sanitized). Resolve Distributor re-validates exactly."
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        -880,
+        480
+      ],
+      "id": "f31b2e67-939b-48a0-b4fd-b9712dab3d58",
+      "name": "Merge Verification"
+    },
+    {
+      "parameters": {
+        "jsCode": "// STEP 1: collect only ACTIVE distributor-associated contacts whose normalized phone exactly matches WhatsApp.\n// Do not mark the number ambiguous yet; the upstream Odoo domain already excludes contacts outside Distributor commercial companies.\nconst cfg = $('Config').first().json;\nconst inp = $('Prepare Input').first().json;\nconst target = cfg.wa_e164;\n\nfunction toE164(raw) {\n  let d = String(raw || '').replace(/\\D/g, '');\n  if (!d) return '';\n  if (d.startsWith('00')) d = d.slice(2);\n  if (d.startsWith('0')) d = '20' + d.slice(1);\n  return '+' + d;\n}\nconst m2o = (v, i) => (Array.isArray(v) ? v[i] : (i === 0 ? (v || 0) : ''));\nconst seen = new Set();\nconst candidates = [];\n\nfor (const row of $input.all().map(i => i.json)) {\n  if (!row || !row.id || row.active === false || seen.has(Number(row.id))) continue;\n  const numbers = [row.phone_sanitized, row.phone].map(toE164).filter(Boolean);\n  if (!target || !numbers.includes(target)) continue;\n  seen.add(Number(row.id));\n  const companyId = Number(m2o(row.commercial_partner_id, 0)) || Number(row.id);\n  const companyName = String(m2o(row.commercial_partner_id, 1) || row.name || '');\n  candidates.push({\n    id: Number(row.id),\n    name: String(row.name || ''),\n    commercial_partner_id: companyId,\n    company_name: companyName,\n    contact_pricelist_id: Number(m2o(row.property_product_pricelist, 0) || 0),\n    salesperson: String(m2o(row.user_id, 1) || '')\n  });\n}\n\nconst companyMap = new Map();\nfor (const c of candidates) if (!companyMap.has(c.commercial_partner_id)) companyMap.set(c.commercial_partner_id, c.company_name);\n\nreturn [{ json: {\n  Text: inp.Text,\n  wa_number: inp.wa_number,\n  wa_e164: target,\n  wa_last9: inp.wa_last9,\n  phone_candidates: candidates,\n  candidate_company_ids: [...companyMap.keys()],\n  all_candidate_company_names: [...companyMap.values()].filter(Boolean)\n}}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -656,
+        480
+      ],
+      "id": "739de1c1-8267-4bb2-804b-7abe8e7d4bde",
+      "name": "Match Phone Candidates"
+    },
+    {
+      "parameters": {
+        "resource": "custom",
+        "customResource": "res.partner",
+        "operation": "getAll",
+        "options": {
+          "fieldsList": [
+            "id",
+            "name",
+            "category_id",
+            "property_product_pricelist",
+            "active",
+            "user_id",
+            "credit",
+            "credit_limit",
+            "total_due",
+            "total_overdue",
+            "trust",
+            "sale_warn_msg"
+          ]
+        },
+        "filterRequest": {
+          "filter": [
+            {
+              "fieldName": "id",
+              "operator": "in",
+              "value": "={{ $('Match Phone Candidates').first().json.candidate_company_ids }}"
+            },
+            {
+              "fieldName": "category_id",
+              "operator": "childOf",
+              "value": "={{ Number($('Config').first().json.dist_tag_id) }}"
+            },
+            {
+              "fieldName": "active",
+              "value": "={{ true }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.odoo",
+      "typeVersion": 1,
+      "position": [
+        -432,
+        480
+      ],
+      "id": "1e47a99e-d696-4655-afd2-bb81599b654d",
+      "name": "Check Distributor Tag (company)",
+      "alwaysOutputData": true,
+      "credentials": {
+        "odooApi": {
+          "id": "Zb4G4MMWYWjxblp3",
+          "name": "Admin Credititional"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "notes": "Targeted verification: query only commercial_partner_id values matched to the exact WhatsApp number, then require Distributor category id 6. This avoids false negatives caused by fetching only the first 500 distributors."
+    },
+    {
+      "parameters": {
+        "jsCode": "// STEP 3: ignore non-distributor duplicates and resolve only eligible distributor companies.\nconst m = $('Match Phone Candidates').first().json;\nconst candidates = Array.isArray(m.phone_candidates) ? m.phone_candidates : [];\nconst m2o = (v, i) => (Array.isArray(v) ? v[i] : (i === 0 ? (v || 0) : ''));\nconst norm = (s) => String(s || '').toLowerCase().replace(/[^\\p{L}\\p{N}]+/gu, ' ').trim();\n\nconst candidateCompanyIds = new Set(candidates.map(c => Number(c.commercial_partner_id || 0)).filter(id => id > 0));\nconst distributorCompanies = $input.all()\n  .map(i => i.json)\n  .filter(c => c && Number(c.id) > 0 && c.active !== false && candidateCompanyIds.has(Number(c.id)));\n\n// One company may arrive more than once; keep one row per commercial company.\nconst eligibleMap = new Map();\nfor (const company of distributorCompanies) if (!eligibleMap.has(Number(company.id))) eligibleMap.set(Number(company.id), company);\nconst eligibleCompanies = [...eligibleMap.values()];\n\nlet selectedCompany = null;\nif (eligibleCompanies.length === 1) {\n  selectedCompany = eligibleCompanies[0];\n} else if (eligibleCompanies.length > 1) {\n  // Resolve only when the message explicitly identifies exactly one eligible distributor company.\n  const message = norm(m.Text);\n  const named = eligibleCompanies.filter(c => {\n    const name = norm(c.name);\n    return name && (message === name || message.includes(name));\n  });\n  if (named.length === 1) selectedCompany = named[0];\n}\n\nconst ambiguous = eligibleCompanies.length > 1 && !selectedCompany;\nconst companyId = selectedCompany ? Number(selectedCompany.id) : 0;\nconst companyCandidates = companyId ? candidates.filter(c => Number(c.commercial_partner_id) === companyId) : [];\n// Prefer the contact record itself; duplicates under the same distributor company are allowed.\nconst selectedContact = companyCandidates.find(c => Number(c.id) !== companyId) || companyCandidates[0] || null;\nconst verified = !ambiguous && !!selectedCompany && !!selectedContact;\n\nconst companyPricelistId = Number(m2o(selectedCompany && selectedCompany.property_product_pricelist, 0) || 0);\nconst contactPricelistId = verified ? Number(selectedContact.contact_pricelist_id || 0) : 0;\nconst pricelistId = verified ? (contactPricelistId || companyPricelistId || 1) : 0;\nconst totalOverdue = verified ? Number(selectedCompany.total_overdue || 0) : 0;\nconst trust = verified ? String(selectedCompany.trust || '') : '';\n\nreturn [{ json: {\n  Text: m.Text,\n  wa_number: m.wa_number,\n  wa_e164: m.wa_e164,\n  wa_last9: m.wa_last9,\n  is_verified: verified,\n  ambiguous_number: ambiguous,\n  candidate_company_names: eligibleCompanies.map(c => String(c.name || '')).filter(Boolean),\n  partner_id: verified ? Number(selectedContact.id) : 0,\n  commercial_partner_id: verified ? companyId : 0,\n  partner_name: verified ? String(selectedContact.name || '') : '',\n  company_name: verified ? String(selectedCompany.name || '') : '',\n  pricelist_id: pricelistId,\n  pricelist_source: verified ? (contactPricelistId ? 'contact' : (companyPricelistId ? 'company' : 'default_1')) : 'none',\n  salesperson: verified ? (String(selectedContact.salesperson || '') || String(m2o(selectedCompany.user_id, 1) || '')) : '',\n  total_due: verified ? Number(selectedCompany.total_due || 0) : 0,\n  total_overdue: totalOverdue,\n  credit_limit: verified ? Number(selectedCompany.credit_limit || 0) : 0,\n  account_trust: trust,\n  account_warning: verified ? String(selectedCompany.sale_warn_msg || '') : '',\n  account_frozen: verified && trust === 'bad',\n  has_overdue: verified && totalOverdue > 0,\n  matching_contact_count: candidates.length,\n  eligible_distributor_company_count: eligibleCompanies.length\n}}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -208,
+        480
+      ],
+      "id": "4e6cb46f-18a5-461a-959c-aa4c863761c9",
+      "name": "Resolve Distributor"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Deterministic verified-distributor context. No lead/onboarding path exists in v7.\nconst d = $('Resolve Distributor').first().json;\nconst pid = Number(d.pricelist_id || 0);\nconst canQuote = d.is_verified === true && d.ambiguous_number !== true && Number(d.partner_id || 0) > 0 && pid > 0;\nreturn [{ json: { ...d, can_quote_price: canQuote } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        16,
+        480
+      ],
+      "id": "60d8a839-e85c-40e8-be91-fbbc35598446",
+      "name": "Build Agent Context"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Deterministic parser, fallback + hard downgrades. Nothing here trusts the LLM.\nconst ctx = $('Build Agent Context').first().json;\nconst raw = $json.output;\nlet text = typeof raw === 'string' ? raw : JSON.stringify(raw ?? '');\nlet d = null;\n\nif (raw && typeof raw === 'object') {\n  d = raw;\n} else {\n  const cleaned = text.replace(/```json/gi, '').replace(/```/g, '').trim();\n  try { d = JSON.parse(cleaned); } catch (e) {\n    const m = cleaned.match(/\\{[\\s\\S]*\\}/);\n    if (m) { try { d = JSON.parse(m[0]); } catch (e2) { d = null; } }\n  }\n}\nif (!d || typeof d !== 'object') d = { action: 'reply_text', reply: text.replace(/```/g, '').trim() };\n\nconst ALLOWED = ['reply_text', 'send_product_pdf', 'send_quotation_pdf'];\nlet action = ALLOWED.includes(String(d.action)) ? String(d.action) : 'reply_text';\n\nlet reply = String(d.reply || '').trim();\nconst attachment_id = Number(d.attachment_id || 0);\nconst product_id = Number(d.product_id || 0);\nconst product_template_id = Number(d.product_template_id || 0);\nconst quotation_id = Number(d.quotation_id || 0);\nconst quotation_name = String(d.quotation_name || '');\n\n// ---- HARD GUARDS (deterministic, not prompt-based) ----\nif (action === 'send_product_pdf') {\n  const ok = ctx.is_verified === true && attachment_id > 0 && product_id > 0;\n  if (!ok) {\n    action = 'reply_text';\n    reply = reply || 'معلش، مش قادر أبعت الملف دلوقتي. هرفع طلبك للمسؤول.';\n  }\n}\nif (action === 'send_quotation_pdf') {\n  const ok = ctx.is_verified === true && ctx.ambiguous_number !== true && Number(ctx.commercial_partner_id || 0) > 0 && quotation_id > 0;\n  if (!ok) {\n    action = 'reply_text';\n    reply = 'تعذر تجهيز ملف عرض السعر بأمان. من فضلك حاول مرة تانية أو تواصل مع مسؤول حسابك.';\n  }\n}\nif (action === 'create_distributor_lead') {\n  // only for unknown numbers with no existing lead\n  if (ctx.is_verified === true || ctx.existing_lead === true) {\n    action = 'reply_text';\n    if (ctx.existing_lead === true && ctx.is_verified !== true) {\n      reply = reply || 'طلب الانضمام بتاعك مسجل عندنا بالفعل، وهيتم التواصل معاك قريب.';\n    }\n  }\n}\nif (ctx.ambiguous_number === true) {\n  // number registered under more than one company: ask, never claim anything was logged\n  action = 'reply_text';\n  const names = Array.isArray(ctx.candidate_company_names) ? ctx.candidate_company_names.filter(Boolean) : [];\n  reply = names.length ? ('الرقم مسجل على أكتر من شركة: ' + names.join('، ') + '. اكتب اسم الشركة المطلوبة فقط.') : 'الرقم مسجل على أكتر من شركة. اكتب اسم الشركة المطلوبة فقط.';\n}\nconst menuChoice = Number($('Map Menu Selection').first().json.selected_service_number || 0);\nconst genericReply = /(?:ممكن|يرجى|من فضلك)?\\s*(?:توضح|وضّح)\\s*(?:طلبك|الطلب)/i.test(reply);\nif (menuChoice > 0 && genericReply) {\n  const starts = {\n    1: 'ثواني أراجع طلباتك الحالية المسجلة على Odoo.',\n    2: 'ثواني أراجع الأصناف المتاحة للتسليم على طلبات حسابك.',\n    3: 'ثواني أراجع المبلغ المطلوب قبل الاستلام على حسابك.',\n    4: 'ثواني أراجع ملخص حسابك والمدفوعات المسجلة.',\n    5: 'ابعت اسم أو كود المنتج المطلوب.',\n    6: 'ما اسم المشروع الجديد؟',\n    7: 'ثواني أراجع المشروعات المسجلة على حسابك.',\n    8: 'ابعت اسم أو كود المنتج والكمية المطلوبة.',\n    9: 'ما اسم المنتج وما المشكلة الفنية؟',\n    10: 'ما اسم المنتج أو السيريال ووصف العطل؟',\n    11: 'ابعت رقم الطلب أو الفاتورة وسبب المرتجع.',\n    12: 'هسجل طلب تواصل مع مسؤول حسابك.'\n  };\n  reply = starts[menuChoice] || reply;\n}\nif (!reply) reply = 'تمام، ممكن توضح طلبك أكتر؟';\n\nreturn [{\n  json: {\n    action,\n    reply,\n    is_verified: ctx.is_verified === true,\n    verified_partner_id: Number(ctx.partner_id || 0),\n    existing_lead: ctx.existing_lead === true,\n    product_id,\n    product_template_id,\n    attachment_id,\n    quotation_id,\n    quotation_name,\n    file_name: String(d.file_name || 'datasheet.pdf'),\n    mime_type: 'application/pdf',\n    needs_approval: Boolean(d.needs_approval),\n    lead_title: String(d.lead_title || ('طلب انضمام موزع - ' + (d.lead_company_name || ctx.wa_number))),\n    lead_company_name: String(d.lead_company_name || ''),\n    lead_contact_name: String(d.lead_contact_name || ''),\n    lead_email: String(d.lead_email || ''),\n    lead_address: String(d.lead_address || ''),\n    lead_summary: String(d.lead_summary || reply),\n    support_summary: String(d.support_summary || 'طلب موزع يحتاج متابعة'),\n    support_note: String(d.support_note || reply)\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1504,
+        400
+      ],
+      "id": "ed8ab355-781d-48c5-97ec-ac8d97ea0399",
+      "name": "Parse Agent Response"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "4a004387-d216-4006-8bcc-9860f089d6fc",
+                    "leftValue": "={{ $json.action }}",
+                    "rightValue": "send_product_pdf",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Send PDF"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "6de42914-eda2-428d-8e77-62209c09c9dd",
+                    "leftValue": "={{ $json.action }}",
+                    "rightValue": "send_quotation_pdf",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Send Quotation PDF"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "Reply"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1728,
+        384
+      ],
+      "id": "e92e518e-49c7-4d53-9b13-51c6c87c9153",
+      "name": "Route Action"
+    },
+    {
+      "parameters": {
+        "resource": "custom",
+        "customResource": "ir.attachment",
+        "operation": "get",
+        "customResourceId": "={{ $('Parse Agent Response').first().json.attachment_id }}",
+        "options": {
+          "fieldsList": [
+            "id",
+            "name",
+            "mimetype",
+            "res_model",
+            "res_id",
+            "datas"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.odoo",
+      "typeVersion": 1,
+      "position": [
+        2176,
+        208
+      ],
+      "id": "e2014143-767d-4100-8270-3287844abea0",
+      "name": "Odoo Read Attachment",
+      "credentials": {
+        "odooApi": {
+          "id": "Zb4G4MMWYWjxblp3",
+          "name": "Admin Credititional"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Deterministic PDF authorisation. Never trust product_template_id supplied by the AI.\nconst p = $('Parse Agent Response').first().json;\nconst product = $('Odoo Resolve Actual Product Template').first().json || {};\nconst a = $json || {};\nconst m2oId = (value) => Array.isArray(value) ? Number(value[0] || 0) : Number(value || 0);\n\nconst requestedProductId = Number(p.product_id || 0);\nconst actualProductId = Number(product.id || 0);\nconst actualTemplateId = m2oId(product.product_tmpl_id);\nconst productResolved = requestedProductId > 0 && actualProductId === requestedProductId && actualTemplateId > 0;\n\nconst linkOk = productResolved && (\n  (a.res_model === 'product.product' && Number(a.res_id) === actualProductId) ||\n  (a.res_model === 'product.template' && Number(a.res_id) === actualTemplateId)\n);\n\nconst allowed =\n  p.is_verified === true &&\n  Number(p.attachment_id) > 0 &&\n  Number(a.id) === Number(p.attachment_id) &&\n  linkOk &&\n  a.mimetype === 'application/pdf' &&\n  !!a.datas;\n\nreturn [{\n  json: {\n    allowed,\n    reason: allowed ? 'ok' : 'blocked: attachment is not linked to the resolved product/template',\n    requested_product_id: requestedProductId,\n    resolved_product_id: actualProductId,\n    resolved_product_template_id: actualTemplateId,\n    attachment_res_model: String(a.res_model || ''),\n    attachment_res_id: Number(a.res_id || 0),\n    media: allowed ? String(a.datas).replace(/\\s/g, '') : '',\n    file_name: String(a.name || p.file_name || 'datasheet.pdf'),\n    reply: p.reply\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2400,
+        208
+      ],
+      "id": "f21f42de-1908-49ab-adf2-e547907f7a52",
+      "name": "PDF Security Check"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ddc8eea1-3ac3-44c7-8c35-8a590ade6a5f",
+              "leftValue": "={{ $json.allowed }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2624,
+        208
+      ],
+      "id": "eb9df169-1099-4b5f-8aa1-d91188b9f41e",
+      "name": "Guard: PDF Allowed"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "operation": "send-document",
+        "instanceName": "={{ $('Webhook').item.json.body.instance }}",
+        "remoteJid": "={{ $('Webhook').item.json.body.data.key.remoteJid.split('@')[0] }}",
+        "media": "={{ $json.media }}",
+        "caption": "={{ $json.reply }}",
+        "fileName": "={{ $json.file_name }}",
+        "options_message": {
+          "delay": 1200
+        }
+      },
+      "type": "n8n-nodes-evolution-api-english.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        2848,
+        208
+      ],
+      "id": "fe0f8a32-f9c0-4abb-88b3-a7dd6e3e8039",
+      "name": "Send Product PDF",
+      "credentials": {
+        "evolutionApi": {
+          "id": "K6jItJdtEWIrn3Sj",
+          "name": "Evolution account vendors"
+        }
+      },
+      "notes": "send-document takes base64 (or URL) as a STRING in 'media' - verified in the installed node source v1.1.2."
+    },
+    {
+      "parameters": {
+        "content": "## 1) Distributor Verification (Deterministic - Fail Closed)\n**Config** يحوّل الرقم لـ E.164.\nالتحقق **على مرحلتين**: (1) مطابقة رقم exact، (2) `category_id child_of 6` على\n**الشركة الأم** (commercial_partner_id) — لأن الكونتاكت غالبًا مالوش Tag.\n⚠️ `x_is_distributor` **مش موجود** في res.partner، و`mobile` **اتشال في Odoo 19**.\nالأساسي: مطابقة **exact** على `phone_sanitized`. الـ `like` fallback بيرجّع مرشحين بس،\nو**Resolve Distributor** يقبل المرشح فقط لو الرقم بعد التطبيع = E.164 بالظبط.\nلو الرقم على أكتر من شركة -> `is_verified = false` واطلب كود الموزع.\nالطلبات/الفواتير/التسليمات مفلترة بـ `partner_id child_of commercial_partner_id`.",
+        "height": 300,
+        "width": 1040,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1632,
+        432
+      ],
+      "id": "85390d33-1f5c-4085-a62a-6f6427ba35ef",
+      "name": "SN_Verification"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ee637712-4461-42fc-a502-ac592325b8cf",
+              "leftValue": "={{ $('Build Agent Context').first().json.is_verified === true && Number($('Build Agent Context').first().json.partner_id || 0) > 0 }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        3072,
+        304
+      ],
+      "id": "ab50d673-ea2f-42ab-918b-50e163c02c91",
+      "name": "Guard: Conversation Log Allowed"
+    },
+    {
+      "parameters": {
+        "resource": "custom",
+        "customResource": "mail.message",
+        "fieldsToCreateOrUpdate": {
+          "fields": [
+            {
+              "fieldName": "model",
+              "fieldValue": "res.partner"
+            },
+            {
+              "fieldName": "res_id",
+              "fieldValue": "={{ Number($('Build Agent Context').first().json.partner_id) }}"
+            },
+            {
+              "fieldName": "message_type",
+              "fieldValue": "comment"
+            },
+            {
+              "fieldName": "subject",
+              "fieldValue": "WhatsApp Distributor Agent"
+            },
+            {
+              "fieldName": "body",
+              "fieldValue": "={{ '<b>WhatsApp inbound</b><br/><pre>' + String($('Build Agent Context').first().json.Text || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</pre><b>Agent reply</b><br/><pre>' + String($('Parse Agent Response').first().json.reply || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</pre>' }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.odoo",
+      "typeVersion": 1,
+      "position": [
+        3296,
+        304
+      ],
+      "id": "812766d3-549f-4bed-9fab-b007ea49778a",
+      "name": "Log Conversation in Odoo",
+      "credentials": {
+        "odooApi": {
+          "id": "Zb4G4MMWYWjxblp3",
+          "name": "Admin Credititional"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e93dc095-09b2-4c75-93cd-c86ef506fe8e",
+              "leftValue": "={{ $json.is_verified === true && $json.ambiguous_number !== true && Number($json.partner_id || 0) > 0 && Number($json.commercial_partner_id || 0) > 0 }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        240,
+        480
+      ],
+      "id": "2b1d564d-42e8-4ccc-9845-2e378a414936",
+      "name": "Is Verified Distributor?"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $('Webhook').item.json.body.instance }}",
+        "remoteJid": "={{ $('Webhook').item.json.body.data.key.remoteJid.split('@')[0] }}",
+        "messageText": "={{ $json.output }}",
+        "options_message": {
+          "delay": 1200
+        }
+      },
+      "type": "n8n-nodes-evolution-api-english.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        928,
+        1152
+      ],
+      "id": "b7d3b510-375b-4660-8043-30aa8ca640a2",
+      "name": "Send Unregistered Number Reply",
+      "credentials": {
+        "evolutionApi": {
+          "id": "K6jItJdtEWIrn3Sj",
+          "name": "Evolution account vendors"
+        }
+      },
+      "notes": "Sends the dedicated onboarding agent reply. This path has no MCP or distributor-data access."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c43e32f5-8ba2-48bc-85ed-aca30b4104f7",
+              "leftValue": "={{ (() => {\n  const raw = String($('Build Agent Context').first().json.Text || '').trim().toLowerCase();\n  const t = raw.replace(/[!؟?،,]+$/g, '').trim();\n  const exact = ['', '.', '..', '...', 'اهلا', 'أهلا', 'أهلاً', 'السلام عليكم', 'سلام', 'مرحبا', 'مرحبًا', 'هاي', 'هلو', 'hi', 'hello', 'menu', 'القائمة', 'الاختيارات', 'اختيارات', 'ابدأ', 'start', '0', 'رجوع', 'القائمة الرئيسية', 'القائمه الرئيسيه'];\n  return exact.includes(t);\n})() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        528,
+        320
+      ],
+      "id": "a1b6ddee-22c1-4c1d-8e48-dc84b3d17c3b",
+      "name": "Greeting or Menu Request?"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $('Webhook').item.json.body.instance }}",
+        "remoteJid": "={{ $('Webhook').item.json.body.data.key.remoteJid.split('@')[0] }}",
+        "messageText": "أهلًا بحضرتك، تحب تستعلم عن إيه؟ اكتب رقم الاختيار:\n\n1- متابعة طلب حالي\n2- معرفة الأصناف المتاحة للتسليم\n3- معرفة المبلغ المطلوب قبل الاستلام\n4- كشف الحساب والمدفوعات\n5- أسعار المنتجات والخصومات الخاصة بحسابك\n6- تسجيل مشروع جديد\n7- متابعة مشروع مسجل\n8- طلب عرض سعر جديد\n9- الدعم الفني\n10- الضمان والصيانة\n11- المرتجعات والاستبدال\n12- التحدث مع مسؤول الحساب",
+        "options_message": {
+          "delay": 1200
+        }
+      },
+      "type": "n8n-nodes-evolution-api-english.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        816,
+        208
+      ],
+      "id": "278ad902-1955-43d1-a4b9-f484032e175a",
+      "name": "Send Main Distributor Menu",
+      "credentials": {
+        "evolutionApi": {
+          "id": "K6jItJdtEWIrn3Sj",
+          "name": "Evolution account vendors"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const j = $input.first().json;\nconst raw = String(j.Text || '').trim();\nconst n = /^(?:0?[1-9]|1[0-2])$/.test(raw) ? Number(raw) : 0;\nconst cid = Number(j.commercial_partner_id || 0);\nconst services = {\n  1: ['متابعة طلب حالي', 'search_records', 'نفّذ فورًا على sale.order بفلتر partner_id child_of ' + cid + ' واعرض رقم الطلب والحالة والتاريخ والإجمالي وحالة الفاتورة والتسليم.'],\n  2: ['الأصناف المتاحة للتسليم', 'search_records', 'نفّذ فورًا على stock.move بفلتر picking_id.partner_id child_of ' + cid + ' والحالات assigned/confirmed/waiting، واعرض المنتج والكمية المتاحة وحالة التسليم فقط.'],\n  3: ['المبلغ المطلوب قبل الاستلام', 'search_records', 'نفّذ فورًا على account.move بفلتر partner_id child_of ' + cid + ' وmove_type=out_invoice وstate=posted وamount_residual>0، واعرض الإجمالي المتبقي وتواريخ الاستحقاق.'],\n  4: ['كشف الحساب والمدفوعات', 'search_records', 'اقرأ account.move ثم account.payment للحساب child_of ' + cid + '، واعرض ملخصًا مختصرًا للفواتير والمدفوع والمتبقي فقط.'],\n  5: ['أسعار المنتجات والخصومات', 'search_products', 'اطلب اسم أو كود منتج واحد فقط، ثم ابحث عنه واعرض سعر البيع الحالي الموجود في Odoo دون تكلفة أو هامش أو تخمين.'],\n  6: ['تسجيل مشروع جديد', 'create_activity', 'اجمع اسم المشروع والموقع والمنتجات المتوقعة والموعد، لخّص واطلب تأكيدًا، ثم أنشئ Activity على res.partner رقم ' + cid + '.'],\n  7: ['متابعة مشروع مسجل', 'search_records', 'نفّذ فورًا على project.project بفلتر partner_id child_of ' + cid + ' واعرض الاسم والحالة والمسؤول والتقدم فقط.'],\n  8: ['طلب عرض سعر جديد', 'create_activity', 'اجمع المنتج والكمية والمشروع والموعد، لخّص واطلب تأكيدًا، ثم أنشئ Activity لطلب عرض سعر على res.partner رقم ' + cid + '.'],\n  9: ['الدعم الفني', 'create_activity', 'اجمع اسم/كود المنتج ووصف المشكلة، لخّص واطلب تأكيدًا، ثم أنشئ Activity دعم فني على res.partner رقم ' + cid + '.'],\n  10: ['الضمان والصيانة', 'create_activity', 'اجمع المنتج والسيريال ورقم الفاتورة والعطل، لخّص واطلب تأكيدًا، ثم أنشئ Activity ضمان/صيانة على res.partner رقم ' + cid + '.'],\n  11: ['المرتجعات والاستبدال', 'create_activity', 'اجمع رقم الطلب/الفاتورة والمنتج والكمية والسبب، لخّص واطلب تأكيدًا، ثم أنشئ Activity مرتجع/استبدال على res.partner رقم ' + cid + '.'],\n  12: ['التحدث مع مسؤول الحساب', 'create_activity', 'أنشئ فورًا Activity طلب تواصل مع مسؤول الحساب على res.partner رقم ' + cid + '.'],\n};\nconst s = services[n] || ['', '', ''];\nconst forcedText = n ? ('[VERIFIED MENU ACTION] option=' + n + '; service=' + s[0] + '; required_mcp_tool=' + s[1] + '; instruction=' + s[2]) : raw;\nreturn [{ json: {\n  ...j,\n  user_original_text: raw,\n  Text: forcedText,\n  selected_service_number: n,\n  selected_service: s[0],\n  required_mcp_tool: s[1],\n  service_instruction: s[2]\n}}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        816,
+        400
+      ],
+      "id": "cc7c8bee-a7ad-4609-add9-208bac8b6b1a",
+      "name": "Map Menu Selection"
+    },
+    {
+      "parameters": {
+        "endpointUrl": "https://mcp.lvxagent.cloud/sse",
+        "serverTransport": "sse",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.2,
+      "position": [
+        1296,
+        624
+      ],
+      "id": "c0c77cac-9562-4ad4-a6b2-7ff722972a6c",
+      "name": "MCP Distributor Odoo",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "resource": "custom",
+        "customResource": "product.product",
+        "operation": "get",
+        "customResourceId": "={{ $('Parse Agent Response').first().json.product_id }}",
+        "options": {
+          "fieldsList": [
+            "id",
+            "name",
+            "default_code",
+            "product_tmpl_id"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.odoo",
+      "typeVersion": 1,
+      "position": [
+        1952,
+        208
+      ],
+      "id": "70eb8ed5-5773-45fb-b231-db65221edc8d",
+      "name": "Odoo Resolve Actual Product Template",
+      "credentials": {
+        "odooApi": {
+          "id": "Zb4G4MMWYWjxblp3",
+          "name": "Admin Credititional"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=## INTERNAL STATUS\nverified_phone: {{ $('Build Agent Context').first().json.wa_e164 }}\nis_verified: {{ $('Build Agent Context').first().json.is_verified }}\nambiguous_number: {{ $('Build Agent Context').first().json.ambiguous_number }}\n\n## MESSAGE\n{{ $('Prepare Input').first().json.Text }}",
+        "options": {
+          "systemMessage": "=أنت مساعد استقبال لخدمة موزعي LVX على WhatsApp. هذا المسار مخصص فقط للأرقام غير المتحقق منها أو الأرقام المرتبطة بأكثر من حساب.\n\nقواعد حتمية:\n- لا تملك أي أدوات Odoo أو MCP ولا تدّعي أنك بحثت في بيانات أو أنشأت طلبًا.\n- لا تعرض أسعارًا أو مخزونًا أو طلبات أو فواتير أو أسماء شركات أو أي بيانات خاصة.\n- لا تذكر كلمة Odoo في الرد.\n- اشرح باختصار أن الخدمة مخصصة للموزعين المعتمدين وأن رقم WhatsApp الحالي غير مسجل ضمن حساب موزع معتمد.\n- لو سأل المستخدم: إزاي أسجل؟ أو عايز أبقى موزع؟ أو عايز أحدّث الرقم؟ اشرح له أن يتواصل مع مسؤول الموزعين على 01284279999 ويرسل: اسم الشركة، اسم المسؤول، المدينة، ونشاط الشركة.\n- لو ambiguous_number=true قل إن الرقم مرتبط بأكثر من حساب ويحتاج مراجعة مسؤول الموزعين على 01284279999، بدون ذكر أسماء الحسابات.\n- يمكنك متابعة الحوار والإجابة عن أسئلة التسجيل وطريقة التواصل فقط. أي طلب خدمة حسابية وجّهه للتسجيل أو تحديث الرقم أولًا.\n- رد عربي مصري مهني ومختصر، واسأل سؤالًا واحدًا في كل مرة."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        368,
+        976
+      ],
+      "id": "83757fe1-1b1d-46be-a203-e321d9c23bca",
+      "name": "Unregistered Onboarding Agent"
+    },
+    {
+      "parameters": {
+        "resource": "custom",
+        "customResource": "sale.order",
+        "operation": "get",
+        "customResourceId": "={{ $('Parse Agent Response').first().json.quotation_id }}",
+        "options": {
+          "fieldsList": [
+            "id",
+            "name",
+            "partner_id",
+            "state",
+            "amount_total",
+            "currency_id",
+            "access_token"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.odoo",
+      "typeVersion": 1,
+      "position": [
+        1952,
+        640
+      ],
+      "id": "34d0aee9-ad00-4b11-a295-ed0bbfadbd28",
+      "name": "Odoo Read Created Quotation",
+      "alwaysOutputData": true,
+      "credentials": {
+        "odooApi": {
+          "id": "Zb4G4MMWYWjxblp3",
+          "name": "Admin Credititional"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "notes": "Reads the exact quotation selected by the verified Agent. access_token remains inside the deterministic PDF branch and is never returned to the LLM or WhatsApp."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Authorize the quotation and build its portal PDF URL from the trusted Odoo record.\nconst p = $('Parse Agent Response').first().json;\nconst ctx = $('Build Agent Context').first().json;\nconst q = $json || {};\nconst m2o = v => Array.isArray(v) ? Number(v[0] || 0) : Number(v || 0);\nconst quoteId = Number(q.id || 0);\nconst partnerId = m2o(q.partner_id);\nconst state = String(q.state || '');\nconst token = String(q.access_token || '');\nconst ownershipOk = ctx.is_verified === true && ctx.ambiguous_number !== true && Number(p.quotation_id || 0) === quoteId && quoteId > 0 && partnerId === Number(ctx.commercial_partner_id || 0) && ['draft','sent'].includes(state);\nconst allowed = ownershipOk && token.length >= 16;\nconst currency = Array.isArray(q.currency_id) ? String(q.currency_id[1] || '') : '';\nconst pdfUrl = allowed ? ('https://thelvx.odoo.com/my/orders/' + quoteId + '?access_token=' + encodeURIComponent(token) + '&report_type=pdf&download=true') : '';\nreturn [{json:{allowed,quotation_id:quoteId,quotation_name:String(q.name || p.quotation_name || ('Quotation-' + quoteId)),amount_total:Number(q.amount_total || 0),currency,pdf_url:pdfUrl,error_reply:allowed ? '' : (ownershipOk ? 'تعذر تجهيز رابط PDF لعرض السعر. حاول مرة أخرى أو تواصل مع مسؤول حسابك.' : 'تم منع إرسال الملف لأن عرض السعر غير مرتبط بحساب الموزع المتحقق منه.')}}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2176,
+        640
+      ],
+      "id": "6bab6498-2fd6-47e6-a0fa-da4ca0aaa579",
+      "name": "Quotation Security Check",
+      "notes": "Hard guard: exact quotation ID, exact verified commercial partner, draft/sent state, and existing Odoo portal token."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "0915e268-4433-45e7-bb41-71b8fd658c5c",
+              "leftValue": "={{ $json.allowed }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2400,
+        640
+      ],
+      "id": "5cd4f0c8-777d-4a4d-993c-5c752d751394",
+      "name": "Guard: Quotation Allowed"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "operation": "send-document",
+        "instanceName": "={{ $('Webhook').item.json.body.instance }}",
+        "remoteJid": "={{ $('Webhook').item.json.body.data.key.remoteJid.split('@')[0] }}",
+        "media": "={{ $('Quotation Security Check').first().json.pdf_url }}",
+        "caption": "={{ 'عرض السعر ' + $('Quotation Security Check').first().json.quotation_name + '\\nالإجمالي: ' + $('Quotation Security Check').first().json.amount_total + ' ' + $('Quotation Security Check').first().json.currency }}",
+        "fileName": "={{ $('Quotation Security Check').first().json.quotation_name + '.pdf' }}",
+        "options_message": {
+          "delay": 1200
+        }
+      },
+      "type": "n8n-nodes-evolution-api-english.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        2624,
+        544
+      ],
+      "id": "ed4a7159-a9be-4de0-8697-c55b5b1d30fd",
+      "name": "Send Quotation PDF to WhatsApp",
+      "credentials": {
+        "evolutionApi": {
+          "id": "K6jItJdtEWIrn3Sj",
+          "name": "Evolution account vendors"
+        }
+      },
+      "notes": "Sends only the PDF of the newly created, account-authorized draft quotation to the same inbound WhatsApp number."
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $('Webhook').item.json.body.instance }}",
+        "remoteJid": "={{ $('Webhook').item.json.body.data.key.remoteJid.split('@')[0] }}",
+        "messageText": "={{ $json.error_reply || 'تم إنشاء طلب عرض السعر، لكن تعذر إرسال ملف PDF حاليًا. من فضلك تواصل مع مسؤول حسابك.' }}",
+        "options_message": {
+          "delay": 1200
+        }
+      },
+      "type": "n8n-nodes-evolution-api-english.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        2624,
+        736
+      ],
+      "id": "a4da9a5e-199b-462e-acab-d7a362b942fd",
+      "name": "Send Quotation PDF Error",
+      "credentials": {
+        "evolutionApi": {
+          "id": "K6jItJdtEWIrn3Sj",
+          "name": "Evolution account vendors"
+        }
+      },
+      "notes": "Safe fallback when quotation ownership, Odoo session, or PDF download validation fails."
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Text",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Voice",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe a recording": {
+      "main": [
+        [
+          {
+            "node": "Voice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text": {
+      "main": [
+        [
+          {
+            "node": "Prepare Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Voice": {
+      "main": [
+        [
+          {
+            "node": "Prepare Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze image": {
+      "main": [
+        [
+          {
+            "node": "Image + Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Image + Text": {
+      "main": [
+        [
+          {
+            "node": "Prepare Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Orchestrator Agent": {
+      "main": [
+        [
+          {
+            "node": "Parse Agent Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT-4.1-mini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Orchestrator Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Unregistered Onboarding Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Orchestrator Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Voice": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Transcribe a recording",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Image": {
+      "main": [
+        [
+          {
+            "node": "Convert to File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File1": {
+      "main": [
+        [
+          {
+            "node": "Analyze image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Input": {
+      "main": [
+        [
+          {
+            "node": "Verify_Distributor (sanitized exact)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Verify_Distributor (phone fallback)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify_Distributor (sanitized exact)": {
+      "main": [
+        [
+          {
+            "node": "Merge Verification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify_Distributor (phone fallback)": {
+      "main": [
+        [
+          {
+            "node": "Merge Verification",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Verification": {
+      "main": [
+        [
+          {
+            "node": "Match Phone Candidates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Match Phone Candidates": {
+      "main": [
+        [
+          {
+            "node": "Check Distributor Tag (company)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Distributor Tag (company)": {
+      "main": [
+        [
+          {
+            "node": "Resolve Distributor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resolve Distributor": {
+      "main": [
+        [
+          {
+            "node": "Build Agent Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Agent Context": {
+      "main": [
+        [
+          {
+            "node": "Is Verified Distributor?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Agent Response": {
+      "main": [
+        [
+          {
+            "node": "Route Action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Action": {
+      "main": [
+        [
+          {
+            "node": "Odoo Resolve Actual Product Template",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Odoo Read Created Quotation",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Odoo Read Attachment": {
+      "main": [
+        [
+          {
+            "node": "PDF Security Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PDF Security Check": {
+      "main": [
+        [
+          {
+            "node": "Guard: PDF Allowed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guard: PDF Allowed": {
+      "main": [
+        [
+          {
+            "node": "Send Product PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send text": {
+      "main": [
+        [
+          {
+            "node": "Guard: Conversation Log Allowed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Product PDF": {
+      "main": [
+        [
+          {
+            "node": "Guard: Conversation Log Allowed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guard: Conversation Log Allowed": {
+      "main": [
+        [
+          {
+            "node": "Log Conversation in Odoo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Verified Distributor?": {
+      "main": [
+        [
+          {
+            "node": "Greeting or Menu Request?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Unregistered Onboarding Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Greeting or Menu Request?": {
+      "main": [
+        [
+          {
+            "node": "Send Main Distributor Menu",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Map Menu Selection",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Map Menu Selection": {
+      "main": [
+        [
+          {
+            "node": "Orchestrator Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Distributor Odoo": {
+      "ai_tool": [
+        [
+          {
+            "node": "Orchestrator Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Odoo Resolve Actual Product Template": {
+      "main": [
+        [
+          {
+            "node": "Odoo Read Attachment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Unregistered Onboarding Agent": {
+      "main": [
+        [
+          {
+            "node": "Send Unregistered Number Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Odoo Read Created Quotation": {
+      "main": [
+        [
+          {
+            "node": "Quotation Security Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Quotation Security Check": {
+      "main": [
+        [
+          {
+            "node": "Guard: Quotation Allowed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guard: Quotation Allowed": {
+      "main": [
+        [
+          {
+            "node": "Send Quotation PDF to WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Quotation PDF Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "5c21b5a0-0940-495a-9efd-3572d60bf960",
+  "meta": {
+    "instanceId": "f2bc043fe69d31a15311aa2cd21b3ee292a856ab9721a5e17b127c2d9716878a"
+  },
+  "nodeGroups": [],
+  "id": "R8Nl47hYCTgw1EvR",
+  "tags": [
+    {
+      "updatedAt": "2026-06-09T05:21:08.039Z",
+      "createdAt": "2026-06-09T05:21:08.039Z",
+      "id": "yK8M1ljjiPm9pFUr",
+      "name": "LVX"
+    }
+  ]
+}
